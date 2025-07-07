@@ -1,35 +1,51 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useLaunchParams, useSignal } from '@telegram-apps/sdk-react';
+import { initData } from '@telegram-apps/sdk-react';
+import './App.css';
 
 function App() {
-  const [count, setCount] = useState(0)
+  // Get the user data from the initData component.
+  // useSignal is a hook that allows reading the value from a signal.
+  const user = useSignal(initData.user);
+  
+  // Get the launch parameters.
+  const launchParams = useLaunchParams();
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
+    <div className="app-container">
+      <header className="app-header">
+        <h1>Telegram Mini App</h1>
+        <p>User Information & Launch Parameters</p>
+      </header>
+
+      {/* Display User Information if available */}
+      {user ? (
+        <div className="card">
+          <h2 className="card-title">User Information</h2>
+          <ul className="info-list">
+            <li><strong>ID:</strong> <span>{user.id}</span></li>
+            <li><strong>First Name:</strong> <span>{user.first_name}</span></li>
+            <li><strong>Last Name:</strong> <span>{user.last_name || 'N/A'}</span></li>
+            <li><strong>Username:</strong> <span>@{user.username || 'N/A'}</span></li>
+            <li><strong>Is Premium:</strong> <span>{user.is_premium ? 'Yes' : 'No'}</span></li>
+            <li><strong>Language Code:</strong> <span>{user.language_code}</span></li>
+          </ul>
+        </div>
+      ) : (
+        <div className="card">
+          <h2 className="card-title">User Information</h2>
+          <p>Loading user data or not running in Telegram...</p>
+        </div>
+      )}
+
+      {/* Display all launch parameters for debugging */}
       <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
+        <h2 className="card-title">All Launch Parameters</h2>
+        <pre className="code-block">
+          {JSON.stringify(launchParams, null, 2)}
+        </pre>
       </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    </div>
+  );
 }
 
 export default App
